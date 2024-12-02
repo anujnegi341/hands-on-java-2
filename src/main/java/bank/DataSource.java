@@ -13,7 +13,6 @@ public class DataSource {
     String db_url = "jdbc:sqlite:resources/bank.db";
     try{
       connection = DriverManager.getConnection(db_url);
-      System.out.println("Successfully connect to bank database");
     } catch(SQLException e) {
       e.printStackTrace();
     }
@@ -71,14 +70,20 @@ public class DataSource {
     }
 
     return customer;
-
   }
 
-  public static void main(String[] args) {
-    Customer hatim = getCustomer("rcharville3k@ovh.net");
-    System.out.println(hatim.getName());
+  public static void updateAccountBalance(int accountId, double balance) {
+    String sql = "Update accounts set balance = ? where id = ?";
 
-    Account hatimAcc = getAccount(hatim.getAccountId());
-    System.out.println(hatimAcc.getBalance());
+    try (
+      Connection connection = connect();
+      PreparedStatement ps = connection.prepareStatement(sql);
+    ) {
+      ps.setInt(1, accountId);
+      ps.setDouble(2, balance);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 }
